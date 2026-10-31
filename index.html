@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Códigos iFood e Zé Delivery</title>
+  <style>
+    /* Variáveis do Modo Claro (Padrão) */
+    :root {
+      --bg-primary: #f2f2f7;
+      --card-bg: #ffffff;
+      --accent-blue: #2563eb;
+      --accent-blue-hover: #1d4ed8;
+      --ifood-red: #ea1d2c;
+      --ze-yellow: #ffcc00;
+      --text-main: #1c1c1e;
+      --text-muted: #8e8e93;
+      --border-color: #e5e5ea;
+      --input-bg: rgba(239, 239, 244, 0.8);
+      --input-form-bg: #f9f9fb;
+      --btn-secondary-bg: #f2f2f7;
+      --btn-secondary-hover: #e5e5ea;
+      --btn-close-bg: #e5e5ea;
+      --box-tel-bg: #e5e5ea;
+      --box-tel-text: #3a3a3c;
+      --box-ifood-bg: #ffe5e7;
+      --box-ze-bg: #fff9e6;
+      --bg-pattern-opacity: 0.04;
+      --bg-svg-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%232563eb' stroke-width='2'%3E%3Cpath d='M20 30h8l4 6h10v-6h6'/%3E%3Ccircle cx='24' cy='42' r='4' fill='%232563eb'/%3E%3Ccircle cx='44' cy='42' r='4' fill='%232563eb'/%3E%3Cpath d='M100 20l20 30h-40z'/%3E%3Ccircle cx='100' cy='32' r='2' fill='%232563eb'/%3E%3Cpath d='M30 100h12v-12h10v12h12v10h-12v12h-10v-12h-12z' fill='%232563eb'/%3E%3Cpath d='M90 100q15-12 30 0v4h-30z'/%3E%3Crect x='90' y='108' width='30' height='4' rx='2' fill='%232563eb'/%3E%3Crect x='130' y='40' width='20' height='22' rx='3'/%3E%3Cpath d='M135 40a5 5 0 0 1 10 0'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Variáveis do Modo Noturno */
+    body.dark-mode {
+      --bg-primary: #0a0d14;
+      --card-bg: #121824;
+      --accent-blue: #38bdf8;
+      --accent-blue-hover: #0284c7;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+      --input-bg: #1e293b;
+      --input-form-bg: #1e293b;
+      --btn-secondary-bg: #1e293b;
+      --btn-secondary-hover: #334155;
+      --btn-close-bg: #1e293b;
+      --box-tel-bg: #1e293b;
+      --box-tel-text: #e2e8f0;
+      --box-ifood-bg: rgba(239, 68, 68, 0.15);
+      --box-ze-bg: rgba(234, 179, 8, 0.15);
+      --bg-pattern-opacity: 0.08;
+      --bg-svg-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='2'%3E%3Cpath d='M20 30h8l4 6h10v-6h6'/%3E%3Ccircle cx='24' cy='42' r='4' fill='%2338bdf8'/%3E%3Ccircle cx='44' cy='42' r='4' fill='%2338bdf8'/%3E%3Cpath d='M100 20l20 30h-40z'/%3E%3Ccircle cx='100' cy='32' r='2' fill='%2338bdf8'/%3E%3Cpath d='M30 100h12v-12h10v12h12v10h-12v12h-10v-12h-12z' fill='%2338bdf8'/%3E%3Cpath d='M90 100q15-12 30 0v4h-30z'/%3E%3Crect x='90' y='108' width='30' height='4' rx='2' fill='%2338bdf8'/%3E%3Crect x='130' y='40' width='20' height='22' rx='3'/%3E%3Cpath d='M135 40a5 5 0 0 1 10 0'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: var(--bg-pattern-opacity);
+      pointer-events: none;
+      background-image: var(--bg-svg-image);
+      background-repeat: repeat;
+      transition: opacity 0.3s ease, background-image 0.3s ease;
+    }
+
+    .container { width: 100%; max-width: 900px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; margin-top: 10px; }
+    h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); }
+    
+    .theme-toggle-btn {
+      background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main);
+      width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); transition: all 0.25s ease;
+    }
+    .theme-toggle-btn:active { transform: scale(0.9); }
+    .theme-toggle-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .botoes-topo { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .btn-add-main {
+      flex: 2; min-width: 160px; padding: 16px; background-color: var(--accent-blue); color: #0f172a;
+      border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-ver-todos, .btn-backup {
+      flex: 1; min-width: 120px; padding: 16px; background-color: var(--card-bg); color: var(--text-main);
+      border: 1px solid var(--border-color); border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    body:not(.dark-mode) .btn-add-main { color: #ffffff; }
+    .btn-add-main svg, .btn-ver-todos svg, .btn-backup svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .busca-container { margin-bottom: 24px; position: relative; }
+    .busca-wrapper { position: relative; display: flex; align-items: center; }
+    .busca-icon { position: absolute; left: 14px; width: 18px; height: 18px; stroke: var(--text-muted); stroke-width: 2.5; fill: none; pointer-events: none; }
+    .busca { width: 100%; padding: 14px 16px 14px 42px; border-radius: 12px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; }
+    .busca:focus { background-color: var(--card-bg); border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); }
+
+    .lista-titulo { margin-bottom: 12px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
+    .status-oculto { text-align: center; padding: 40px 20px; background-color: var(--card-bg); border-radius: 16px; color: var(--text-muted); font-size: 15px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .status-oculto svg { width: 40px; height: 40px; stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+    
+    .grid-cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 640px) { .grid-cards { grid-template-columns: repeat(2, 1fr); } }
+
+    .item-card { background-color: var(--card-bg); border-radius: 16px; padding: 18px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
+    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+    .item-apto { font-size: 17px; font-weight: 700; color: var(--accent-blue); }
+    .item-morador { font-size: 16px; font-weight: 600; color: var(--text-main); }
+    .codigos-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .box-codigo { padding: 10px 6px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; }
+    .box-tel { background-color: var(--box-tel-bg); color: var(--box-tel-text); border: 1px solid var(--border-color); }
+    .box-ifood { background-color: var(--box-ifood-bg); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    body:not(.dark-mode) .box-ifood { color: var(--ifood-red); }
+    .box-ze { background-color: var(--box-ze-bg); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+    body:not(.dark-mode) .box-ze { color: #8a6d00; }
+    .label-box { display: block; font-size: 9px; text-transform: uppercase; font-weight: 700; opacity: 0.85; margin-bottom: 2px; }
+    .botoes-item { display: flex; gap: 8px; }
+    .btn-acao { flex: 1; padding: 10px; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-editar { background-color: var(--btn-secondary-bg); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-excluir { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: flex-end; z-index: 1000; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease; }
+    .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+    .modal-card { background-color: var(--card-bg); width: 100%; max-width: 520px; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px 20px 32px 20px; max-height: 90vh; overflow-y: auto; border-top: 1px solid var(--border-color); }
+    .modal-card.modal-large { max-width: 800px; display: flex; flex-direction: column; }
+    @media (min-width: 640px) { .modal-overlay { align-items: center; } .modal-card { border-radius: 24px; border: 1px solid var(--border-color); } }
+
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 20px; font-weight: 700; color: var(--text-main); }
+    .btn-close-modal { background: var(--btn-close-bg); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--text-muted); text-transform: uppercase; }
+    .form-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); font-size: 16px; font-weight: 600; outline: none; background-color: var(--input-form-bg); color: var(--text-main); }
+    .input-ifood { background-color: var(--box-ifood-bg); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+    body:not(.dark-mode) .input-ifood { color: var(--ifood-red); }
+    .input-ze { background-color: var(--box-ze-bg); border-color: rgba(234, 179, 8, 0.4); color: #facc15; }
+    body:not(.dark-mode) .input-ze { color: #665200; }
+    .btn-salvar-modal { width: 100%; padding: 16px; background-color: var(--accent-blue); color: #0f172a; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    body:not(.dark-mode) .btn-salvar-modal { color: #ffffff; }
+
+    .paginacao-container { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-color); }
+    .btn-paginacao { padding: 8px 16px; background-color: var(--btn-secondary-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-paginacao:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pagina-info { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+
+    .toast-sucesso { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background-color: rgba(16, 185, 129, 0.95); backdrop-filter: blur(10px); color: white; padding: 12px 22px; border-radius: 25px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; z-index: 2000; transition: transform 0.4s ease; }
+    .toast-sucesso.show { transform: translateX(-50%) translateY(0); }
+  </style>
+
+  <!-- SDK oficial do Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="toastSucesso" class="toast-sucesso">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastTexto">Salvo com sucesso!</span>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>Códigos iFood e Zé Delivery</h1>
+      <button type="button" id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTema()" title="Alternar Modo Noturno">
+        <svg id="themeIcon" viewBox="0 0 24 24"></svg>
+      </button>
+    </header>
+
+    <div class="botoes-topo">
+      <button type="button" class="btn-add-main" onclick="abrirNovoRegistro()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Novo Registro
+      </button>
+      <button type="button" class="btn-ver-todos" onclick="abrirTodosRegistros()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Ver Todos
+      </button>
+      <button type="button" class="btn-backup" onclick="exportarBackup()" title="Salvar backup no PC">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Exportar
+      </button>
+      <button type="button" class="btn-backup" onclick="migrarDadosParaSupabase()" title="Subir LocalStorage pro Supabase">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        Migrar LocalStorage
+      </button>
+    </div>
+
+    <div class="busca-container">
+      <div class="busca-wrapper">
+        <svg class="busca-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="buscaInput" class="busca" placeholder="Buscar morador ou número do apto..." oninput="renderizarBusca()">
+      </div>
+    </div>
+
+    <div class="lista-titulo">
+      <span>Resultado da Pesquisa</span>
+      <span id="totalRegistros">Total salvo: 0</span>
+    </div>
+
+    <div id="listaEntregas" class="grid-cards"></div>
+  </div>
+
+  <!-- Modal Cadastro/Edição -->
+  <div id="modalForm" class="modal-overlay" onclick="fecharModalOverlay(event, 'modalForm')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title">Registrar Códigos</h2>
+        <button type="button" class="btn-close-modal" onclick="fecharModal('modalForm')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="formEntrega">
+        <input type="hidden" id="editId" value="-1">
+
+        <div class="form-group">
+          <label for="morador">Nome do Morador</label>
+          <input type="text" id="morador" class="form-input" placeholder="Ex: João Silva" required>
+        </div>
+
+        <div class="form-group">
+          <label for="apartamento">Nº do Apto / Bloco</label>
+          <input type="text" id="apartamento" class="form-input" placeholder="Ex: 104 Bloco B" required>
+        </div>
+
+        <div class="form-group">
+          <label for="telCodigo">Últimos 4 números do Tel</label>
+          <input type="text" id="telCodigo" class="form-input" maxlength="4" placeholder="Ex: 1234">
+        </div>
+
+        <div class="form-group">
+          <label for="ifoodCodigo">Código iFood (Vermelho)</label>
+          <input type="text" id="ifoodCodigo" class="form-input input-ifood" maxlength="6" placeholder="Ex: 4321">
+        </div>
+
+        <div class="form-group">
+          <label for="zeCodigo">Código Zé Delivery (Amarelo)</label>
+          <input type="text" id="zeCodigo" class="form-input input-ze" maxlength="6" placeholder="Ex: 8899">
+        </div>
+
+        <button type="submit" id="btnSalvar" class="btn-salvar-modal">Salvar Registro</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Ver Todos com Paginação -->
+  <div id="modalTodos" class="modal-overlay" onclick="fecharModalOverlay(event, 'modalTodos')">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h2 class="modal-title">Todos os Registros Salvos</h2>
+        <button type="button" class="btn-close-modal" onclick="fecharModal('modalTodos')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div id="gridTodosRegistros" class="grid-cards"></div>
+
+      <div class="paginacao-container">
+        <button type="button" id="btnPagAnterior" class="btn-paginacao" onclick="mudarPagina(-1)">Anterior</button>
+        <span id="infoPagina" class="pagina-info">Página 1 de 1</span>
+        <button type="button" id="btnPagProxima" class="btn-paginacao" onclick="mudarPagina(1)">Próxima</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configurações do Supabase integradas
+    const SUPABASE_URL = 'https://ehgzjfwleqqytwloarkd.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoZ3pqZndsZXFxeXR3bG9hcmtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MTY2MjcsImV4cCI6MjEwODk5MjYyN30.dY64SX6f0udLSr_3P79V45oA0r5d4fcumVzwi8xO67U';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let entregas = [];
+    let paginaAtual = 1;
+    const itensPorPagina = 10;
+
+    const modalForm = document.getElementById('modalForm');
+    const modalTodos = document.getElementById('modalTodos');
+    const form = document.getElementById('formEntrega');
+    const editIdInput = document.getElementById('editId');
+    const moradorInput = document.getElementById('morador');
+    const apartamentoInput = document.getElementById('apartamento');
+    const telCodigoInput = document.getElementById('telCodigo');
+    const ifoodCodigoInput = document.getElementById('ifoodCodigo');
+    const zeCodigoInput = document.getElementById('zeCodigo');
+    const btnSalvar = document.getElementById('btnSalvar');
+    const modalTitle = document.getElementById('modalTitle');
+    const toastSucesso = document.getElementById('toastSucesso');
+    const toastTexto = document.getElementById('toastTexto');
+    const totalRegistrosSpan = document.getElementById('totalRegistros');
+    const themeIcon = document.getElementById('themeIcon');
+
+    // Carregar dados do Supabase
+    async function carregarEntregas() {
+      const { data, error } = await supabaseClient
+        .from('entregas')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('Erro ao buscar dados do Supabase:', error);
+        return;
+      }
+
+      entregas = data || [];
+      atualizarContador();
+      renderizarBusca();
+      if (modalTodos.classList.contains('active')) {
+        renderizarTodosPaginado();
+      }
+    }
+
+    // MIGRAR DADOS ANTIGOS DO LOCALSTORAGE
+    async function migrarDadosParaSupabase() {
+      const dadosLocais = JSON.parse(localStorage.getItem('entregasPortaria')) || [];
+      if (dadosLocais.length === 0) {
+        alert('Nenhum dado antigo encontrado no LocalStorage.');
+        return;
+      }
+
+      if (!confirm(`Deseja enviar ${dadosLocais.length} registros salvos no navegador para o Supabase?`)) return;
+
+      const registrosFormatados = dadosLocais.map(item => ({
+        morador: item.morador,
+        apartamento: item.apartamento,
+        tel: item.tel || '',
+        ifood: item.ifood || '',
+        ze: item.ze || ''
+      }));
+
+      const { error } = await supabaseClient.from('entregas').insert(registrosFormatados);
+
+      if (error) {
+        alert('Erro ao enviar dados para o Supabase: ' + error.message);
+      } else {
+        mostrarToast('Migração concluída com sucesso!');
+        await carregarEntregas();
+      }
+    }
+
+    function aplicarTema(isDark) {
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+      }
+    }
+
+    function toggleTema() {
+      const isDark = !document.body.classList.contains('dark-mode');
+      aplicarTema(isDark);
+      localStorage.setItem('temaPortaria', isDark ? 'dark' : 'light');
+    }
+
+    const temaSalvo = localStorage.getItem('temaPortaria');
+    if (temaSalvo === 'dark' || (!temaSalvo && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      aplicarTema(true);
+    } else {
+      aplicarTema(false);
+    }
+
+    function atualizarContador() {
+      totalRegistrosSpan.textContent = `Total salvo: ${entregas.length}`;
+    }
+
+    function abrirNovoRegistro() {
+      limparFormulario();
+      modalForm.classList.add('active');
+    }
+
+    function abrirTodosRegistros() {
+      paginaAtual = 1;
+      renderizarTodosPaginado();
+      modalTodos.classList.add('active');
+    }
+
+    function fecharModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function fecharModalOverlay(e, modalId) {
+      if (e.target.classList.contains('modal-overlay')) fecharModal(modalId);
+    }
+
+    function mostrarToast(mensagem = 'Salvo com sucesso!') {
+      toastTexto.textContent = mensagem;
+      toastSucesso.classList.add('show');
+      setTimeout(() => toastSucesso.classList.remove('show'), 2500);
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const registro = {
+        morador: moradorInput.value.trim(),
+        apartamento: apartamentoInput.value.trim(),
+        tel: telCodigoInput.value.trim(),
+        ifood: ifoodCodigoInput.value.trim(),
+        ze: zeCodigoInput.value.trim()
+      };
+
+      const editId = editIdInput.value;
+
+      if (editId === "-1") {
+        const { error } = await supabaseClient.from('entregas').insert([registro]);
+        if (error) alert('Erro ao salvar no Supabase: ' + error.message);
+      } else {
+        const { error } = await supabaseClient.from('entregas').update(registro).eq('id', editId);
+        if (error) alert('Erro ao atualizar no Supabase: ' + error.message);
+      }
+
+      fecharModal('modalForm');
+      mostrarToast();
+      await carregarEntregas();
+    });
+
+    function gerarCardHTML(item) {
+      return `
+        <div class="item-card">
+          <div>
+            <div class="item-header">
+              <span class="item-apto">Apto ${item.apartamento}</span>
+              <span class="item-morador">${item.morador}</span>
+            </div>
+            <div class="codigos-grid">
+              <div class="box-codigo box-tel">
+                <span class="label-box">Tel (4 Díg)</span>
+                ${item.tel || '---'}
+              </div>
+              <div class="box-codigo box-ifood">
+                <span class="label-box">iFood</span>
+                ${item.ifood || '---'}
+              </div>
+              <div class="box-codigo box-ze">
+                <span class="label-box">Zé Delivery</span>
+                ${item.ze || '---'}
+              </div>
+            </div>
+          </div>
+          <div class="botoes-item">
+            <button type="button" class="btn-acao btn-editar" onclick="prepararEdicao(${item.id})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              Editar
+            </button>
+            <button type="button" class="btn-acao btn-excluir" onclick="excluirRegistro(${item.id})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              Excluir
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderizarBusca() {
+      const listaContainer = document.getElementById('listaEntregas');
+      const termoBusca = document.getElementById('buscaInput').value.trim().toLowerCase();
+      listaContainer.innerHTML = '';
+
+      if (termoBusca === '') {
+        listaContainer.innerHTML = `
+          <div class="status-oculto" style="grid-column: 1 / -1;">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Digite o morador ou apartamento para buscar.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const regexApto = new RegExp(`(?:^|\\s|\\b)${termoBusca}(?:$|\\s|\\b)`, 'i');
+      const entregasFiltradas = entregas.filter(item => {
+        const nomeCorresponde = item.morador.toLowerCase().includes(termoBusca);
+        const aptoCorresponde = regexApto.test(item.apartamento);
+        return nomeCorresponde || aptoCorresponde;
+      });
+
+      if (entregasFiltradas.length === 0) {
+        listaContainer.innerHTML = `
+          <div class="status-oculto" style="grid-column: 1 / -1;">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <span>Nenhum registro encontrado para "${termoBusca}".</span>
+          </div>
+        `;
+        return;
+      }
+
+      entregasFiltradas.forEach(item => {
+        listaContainer.innerHTML += gerarCardHTML(item);
+      });
+    }
+
+    function renderizarTodosPaginado() {
+      const container = document.getElementById('gridTodosRegistros');
+      const totalPaginas = Math.ceil(entregas.length / itensPorPagina) || 1;
+
+      if (paginaAtual < 1) paginaAtual = 1;
+      if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+
+      container.innerHTML = '';
+
+      if (entregas.length === 0) {
+        container.innerHTML = `<div class="status-oculto" style="grid-column: 1 / -1;"><span>Nenhum registro cadastrado no momento.</span></div>`;
+        document.getElementById('infoPagina').textContent = 'Página 0 de 0';
+        document.getElementById('btnPagAnterior').disabled = true;
+        document.getElementById('btnPagProxima').disabled = true;
+        return;
+      }
+
+      const inicio = (paginaAtual - 1) * itensPorPagina;
+      const fim = inicio + itensPorPagina;
+      const itensPagina = entregas.slice(inicio, fim);
+
+      itensPagina.forEach(item => {
+        container.innerHTML += gerarCardHTML(item);
+      });
+
+      document.getElementById('infoPagina').textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+      document.getElementById('btnPagAnterior').disabled = paginaAtual === 1;
+      document.getElementById('btnPagProxima').disabled = paginaAtual === totalPaginas;
+    }
+
+    function mudarPagina(direcao) {
+      paginaAtual += direcao;
+      renderizarTodosPaginado();
+    }
+
+    function prepararEdicao(id) {
+      const item = entregas.find(e => e.id === id);
+      if (!item) return;
+
+      editIdInput.value = item.id;
+      moradorInput.value = item.morador;
+      apartamentoInput.value = item.apartamento;
+      telCodigoInput.value = item.tel;
+      ifoodCodigoInput.value = item.ifood;
+      zeCodigoInput.value = item.ze;
+
+      modalTitle.textContent = "Editar Registro";
+      btnSalvar.textContent = "Atualizar Registro";
+
+      if (modalTodos.classList.contains('active')) fecharModal('modalTodos');
+      modalForm.classList.add('active');
+    }
+
+    function limparFormulario() {
+      editIdInput.value = "-1";
+      form.reset();
+      modalTitle.textContent = "Registrar Códigos";
+      btnSalvar.textContent = "Salvar Registro";
+    }
+
+    async function excluirRegistro(id) {
+      if (confirm("Deseja realmente excluir este registro?")) {
+        const { error } = await supabaseClient.from('entregas').delete().eq('id', id);
+        if (error) {
+          alert('Erro ao excluir do Supabase: ' + error.message);
+        } else {
+          mostrarToast('Registro excluído!');
+          await carregarEntregas();
+        }
+      }
+    }
+
+    function exportarBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entregas, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `backup_portaria_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      mostrarToast('Backup exportado com sucesso!');
+    }
+
+    // Inicialização ao carregar a página
+    carregarEntregas();
+  </script>
+</body>
+</html>
