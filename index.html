@@ -12,41 +12,368 @@
   <!-- SDK oficial do Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            ifood: {
-              DEFAULT: '#EA1D2C',
-              hover: '#C21323',
-              light: '#FFE5E7',
-              darkBg: 'rgba(234, 29, 44, 0.15)',
-              border: 'rgba(234, 29, 44, 0.3)'
-            },
-            ze: {
-              DEFAULT: '#FFCC00',
-              hover: '#E6B800',
-              text: '#665200',
-              light: '#FFF9E6',
-              darkBg: 'rgba(255, 204, 0, 0.15)',
-              border: 'rgba(255, 204, 0, 0.3)'
-            },
-            ios: {
-              bgLight: '#F2F2F7',
-              bgDark: '#0A0A0C',
-              cardLight: 'rgba(255, 255, 255, 0.85)',
-              cardDark: 'rgba(24, 24, 27, 0.85)',
-              accent: '#007AFF'
-            }
-          },
-          fontFamily: {
-            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Helvetica Neue', 'sans-serif']
-          }
+<script>
+    // Configurações do Supabase Mantidas Ítegras
+    const SUPABASE_URL = 'https://ehgzjfwleqqytwloarkd.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoZ3pqZndsZXFxeXR3bG9hcmtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MTY2MjcsImV4cCI6MjEwODk5MjYyN30.dY64SX6f0udLSr_3P79V45oA0r5d4fcumVzwi8xO67U';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let entregas = [];
+    let paginaAtual = 1;
+    const itensPorPagina = 8;
+
+    // Alternar Modo Noturno / Claro
+    function aplicarTema(isDark) {
+      const themeIcon = document.getElementById('themeIcon');
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>`;
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>`;
+      }
+    }
+
+    function toggleTema() {
+      const isDark = !document.documentElement.classList.contains('dark');
+      aplicarTema(isDark);
+      localStorage.setItem('temaPortaria', isDark ? 'dark' : 'light');
+    }
+
+    // Inicialização do Tema
+    const temaSalvo = localStorage.getItem('temaPortaria');
+    if (temaSalvo === 'dark' || (!temaSalvo && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      aplicarTema(true);
+    } else {
+      aplicarTema(false);
+    }
+
+    // Carregar Entregas do Supabase
+    async function carregarEntregas() {
+      const { data, error } = await supabaseClient
+        .from('entregas')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('Erro no Supabase:', error);
+        return;
+      }
+
+      entregas = data || [];
+      atualizarEstatísticas();
+      renderizarBusca();
+      if (document.getElementById('modalTodos').classList.contains('active')) {
+        renderizarTodosPaginado();
+      }
+    }
+
+    function atualizarEstatísticas() {
+      document.getElementById('totalRegistros').textContent = `Total salvo: ${entregas.length}`;
+      document.getElementById('statTotal').textContent = entregas.length;
+      
+      const countIfood = entregas.filter(item => item.ifood && item.ifood.trim() !== '').length;
+      const countZe = entregas.filter(item => item.ze && item.ze.trim() !== '').length;
+
+      document.getElementById('statIfood').textContent = countIfood;
+      document.getElementById('statZe').textContent = countZe;
+    }
+
+    // Modal Control Otimizado para Animações Fluidas
+    function abrirNovoRegistro() {
+      limparFormulario();
+      abrirModal('modalForm');
+    }
+
+    function abrirTodosRegistros() {
+      paginaAtual = 1;
+      // 1. Limpa o contêiner e abre o modal imediatamente para a animação rodar suave
+      document.getElementById('gridTodosRegistros').innerHTML = '';
+      abrirModal('modalTodos');
+
+      // 2. Aguarda a animação do modal iniciar para injetar o conteúdo sem engasgos
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          renderizarTodosPaginado();
+        }, 50);
+      });
+    }
+
+    function abrirModal(id) {
+      const modal = document.getElementById(id);
+      const content = modal.querySelector('.modal-content');
+      modal.classList.add('active');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      
+      content.classList.remove('animate-sheet-close');
+      content.classList.add('animate-sheet-open');
+    }
+
+    function fecharModal(id) {
+      const modal = document.getElementById(id);
+      const content = modal.querySelector('.modal-content');
+      
+      content.classList.remove('animate-sheet-open');
+      content.classList.add('animate-sheet-close');
+
+      setTimeout(() => {
+        modal.classList.remove('active');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      }, 250);
+    }
+
+    function mostrarToast(mensagem = 'Salvo com sucesso!') {
+      const toast = document.getElementById('toastSucesso');
+      document.getElementById('toastTexto').textContent = mensagem;
+      
+      toast.classList.remove('opacity-0', '-translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', '-translate-y-20');
+      }, 2600);
+    }
+
+    // Copiar código ao clicar
+    function copiarCodigo(texto, tipo) {
+      if (!texto || texto === '---') return;
+      
+      const el = document.createElement('textarea');
+      el.value = texto;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+
+      mostrarToast(`Código ${tipo} (${texto}) copiado!`);
+    }
+
+    // CRUD Operações
+    async function salvarEntrega(e) {
+      e.preventDefault();
+
+      const registro = {
+        morador: document.getElementById('morador').value.trim(),
+        apartamento: document.getElementById('apartamento').value.trim(),
+        tel: document.getElementById('telCodigo').value.trim(),
+        ifood: document.getElementById('ifoodCodigo').value.trim(),
+        ze: document.getElementById('zeCodigo').value.trim()
+      };
+
+      const editId = document.getElementById('editId').value;
+
+      if (editId === "-1") {
+        const { error } = await supabaseClient.from('entregas').insert([registro]);
+        if (error) alert('Erro ao salvar no Supabase: ' + error.message);
+      } else {
+        const { error } = await supabaseClient.from('entregas').update(registro).eq('id', editId);
+        if (error) alert('Erro ao atualizar no Supabase: ' + error.message);
+      }
+
+      fecharModal('modalForm');
+      mostrarToast('Registro salvo!');
+      await carregarEntregas();
+    }
+
+    function prepararEdicao(id) {
+      const item = entregas.find(e => e.id === id);
+      if (!item) return;
+
+      document.getElementById('editId').value = item.id;
+      document.getElementById('morador').value = item.morador;
+      document.getElementById('apartamento').value = item.apartamento;
+      document.getElementById('telCodigo').value = item.tel;
+      document.getElementById('ifoodCodigo').value = item.ifood;
+      document.getElementById('zeCodigo').value = item.ze;
+
+      document.getElementById('modalTitle').textContent = "Editar Registro";
+      document.getElementById('btnSalvar').textContent = "Atualizar Registro";
+
+      if (document.getElementById('modalTodos').classList.contains('active')) fecharModal('modalTodos');
+      abrirModal('modalForm');
+    }
+
+    function limparFormulario() {
+      document.getElementById('editId').value = "-1";
+      document.getElementById('formEntrega').reset();
+      document.getElementById('modalTitle').textContent = "Registrar Códigos";
+      document.getElementById('btnSalvar').textContent = "Salvar Registro";
+    }
+
+    async function excluirRegistro(id) {
+      if (confirm("Tem certeza que deseja excluir este registro?")) {
+        const { error } = await supabaseClient.from('entregas').delete().eq('id', id);
+        if (error) {
+          alert('Erro ao excluir: ' + error.message);
+        } else {
+          mostrarToast('Registro excluído!');
+          await carregarEntregas();
         }
       }
     }
+
+    // Renderização dos Cards Otimizada
+    function gerarCardHTML(item, index = 0) {
+      const delay = (index % 6) * 0.04;
+      return `
+        <div class="card-enter ios-glass-card bg-white/80 dark:bg-zinc-800/80 rounded-2xl p-4 border border-zinc-200/80 dark:border-zinc-700/80 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between" style="animation-delay: ${delay}s">
+          <div>
+            <div class="flex items-start justify-between pb-3 mb-3 border-b border-zinc-200/60 dark:border-zinc-700/60">
+              <div>
+                <span class="text-xs font-black uppercase tracking-wider text-ios-accent block">Apto ${item.apartamento}</span>
+                <h3 class="text-base font-bold text-zinc-900 dark:text-white leading-tight">${item.morador}</h3>
+              </div>
+              <div class="flex gap-1">
+                <button onclick="prepararEdicao(${item.id})" class="p-2 text-zinc-400 hover:text-ios-accent active:scale-90 transition-all">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button onclick="excluirRegistro(${item.id})" class="p-2 text-zinc-400 hover:text-ifood active:scale-90 transition-all">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Grid de Códigos Clique-para-Copiar -->
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <div onclick="copiarCodigo('${item.tel}', 'Tel')" class="cursor-pointer bg-zinc-100 dark:bg-zinc-700/50 hover:bg-zinc-200 dark:hover:bg-zinc-700 p-2 rounded-xl text-center border border-zinc-200/50 dark:border-zinc-600/50 active:scale-95 transition-all">
+                <span class="block text-[9px] font-bold uppercase tracking-wider text-zinc-400">Tel (4 Dig)</span>
+                <span class="text-sm font-black text-zinc-700 dark:text-zinc-200">${item.tel || '---'}</span>
+              </div>
+
+              <div onclick="copiarCodigo('${item.ifood}', 'iFood')" class="cursor-pointer bg-ifood/10 hover:bg-ifood/20 p-2 rounded-xl text-center border border-ifood/30 active:scale-95 transition-all">
+                <span class="block text-[9px] font-bold uppercase tracking-wider text-ifood">iFood</span>
+                <span class="text-sm font-black text-ifood">${item.ifood || '---'}</span>
+              </div>
+
+              <div onclick="copiarCodigo('${item.ze}', 'Zé')" class="cursor-pointer bg-ze/10 hover:bg-ze/20 p-2 rounded-xl text-center border border-ze/30 active:scale-95 transition-all">
+                <span class="block text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-ze">Zé</span>
+                <span class="text-sm font-black text-amber-600 dark:text-ze">${item.ze || '---'}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-[10px] text-center text-zinc-400">Toque em um código para copiar</p>
+        </div>
+      `;
+    }
+
+    function renderizarBusca() {
+      const container = document.getElementById('listaEntregas');
+      const termo = document.getElementById('buscaInput').value.trim().toLowerCase();
+      
+      if (termo === '') {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center ios-glass-card bg-white/50 dark:bg-zinc-800/40 rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-700">
+            <svg class="w-12 h-12 mx-auto text-zinc-300 dark:text-zinc-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Digite o nome ou apartamento para pesquisar</p>
+          </div>
+        `;
+        return;
+      }
+
+      const regexApto = new RegExp(`(?:^|\\s|\\b)${termo}(?:$|\\s|\\b)`, 'i');
+      const filtrados = entregas.filter(item => {
+        const nomeMatch = item.morador.toLowerCase().includes(termo);
+        const aptoMatch = regexApto.test(item.apartamento);
+        return nomeMatch || aptoMatch;
+      });
+
+      if (filtrados.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center ios-glass-card bg-white/50 dark:bg-zinc-800/40 rounded-3xl border border-zinc-200 dark:border-zinc-800">
+            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Nenhum registro encontrado para "${termo}"</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Monta em lote para evitar reflows
+      let htmlGeral = '';
+      filtrados.forEach((item, index) => {
+        htmlGeral += gerarCardHTML(item, index);
+      });
+      container.innerHTML = htmlGeral;
+    }
+
+    function renderizarTodosPaginado() {
+      const container = document.getElementById('gridTodosRegistros');
+      const totalPaginas = Math.ceil(entregas.length / itensPorPagina) || 1;
+
+      if (paginaAtual < 1) paginaAtual = 1;
+      if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+
+      if (entregas.length === 0) {
+        container.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-400">Nenhum registro cadastrado.</div>`;
+        document.getElementById('infoPagina').textContent = 'Página 0 de 0';
+        document.getElementById('btnPagAnterior').disabled = true;
+        document.getElementById('btnPagProxima').disabled = true;
+        return;
+      }
+
+      const inicio = (paginaAtual - 1) * itensPorPagina;
+      const fim = inicio + itensPorPagina;
+      const itensPagina = entregas.slice(inicio, fim);
+
+      // Concatena a string inteira primeiro (Performance alta)
+      let htmlPagina = '';
+      itensPagina.forEach((item, index) => {
+        htmlPagina += gerarCardHTML(item, index);
+      });
+
+      container.innerHTML = htmlPagina;
+      container.scrollTop = 0; // Garante o topo
+
+      document.getElementById('infoPagina').textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+      document.getElementById('btnPagAnterior').disabled = paginaAtual === 1;
+      document.getElementById('btnPagProxima').disabled = paginaAtual === totalPaginas;
+    }
+
+    function mudarPagina(dir) {
+      paginaAtual += dir;
+      renderizarTodosPaginado();
+    }
+
+    // Ferramentas Adicionais
+    function exportarBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entregas, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `backup_portaria_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      mostrarToast('Backup exportado com sucesso!');
+    }
+
+    async function migrarDadosParaSupabase() {
+      const dadosLocais = JSON.parse(localStorage.getItem('entregasPortaria')) || [];
+      if (dadosLocais.length === 0) {
+        alert('Nenhum dado antigo encontrado no LocalStorage.');
+        return;
+      }
+
+      if (!confirm(`Deseja enviar ${dadosLocais.length} registros salvos no navegador para o Supabase?`)) return;
+
+      const registrosFormatados = dadosLocais.map(item => ({
+        morador: item.morador,
+        apartamento: item.apartamento,
+        tel: item.tel || '',
+        ifood: item.ifood || '',
+        ze: item.ze || ''
+      }));
+
+      const { error } = await supabaseClient.from('entregas').insert(registrosFormatados);
+
+      if (error) {
+        alert('Erro na migração: ' + error.message);
+      } else {
+        mostrarToast('Migração concluída!');
+        await carregarEntregas();
+      }
+    }
+
+    // Iniciar
+    carregarEntregas();
   </script>
 
   <style>
