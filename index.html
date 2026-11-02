@@ -50,8 +50,8 @@
   </script>
 
   <style>
-    /* Estilos Globais e Animações iOS com Motion Blur */
-    * {
+    /* Estilos Globais e Animações iOS */
+    body {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -67,20 +67,15 @@
       -webkit-backdrop-filter: blur(16px) saturate(160%);
     }
 
-    /* Animação Motion Blur na abertura do Modal */
+    /* Animação Otimizada e Mais Rápida na Abertura do Modal */
     @keyframes iosSheetOpen {
       0% {
-        transform: translateY(100%) scale(0.95);
+        transform: translateY(40px) scale(0.97);
         opacity: 0;
-        filter: blur(12px);
-      }
-      60% {
-        filter: blur(2px);
       }
       100% {
         transform: translateY(0) scale(1);
         opacity: 1;
-        filter: blur(0);
       }
     }
 
@@ -88,12 +83,10 @@
       0% {
         transform: translateY(0) scale(1);
         opacity: 1;
-        filter: blur(0);
       }
       100% {
-        transform: translateY(100%) scale(0.92);
+        transform: translateY(40px) scale(0.97);
         opacity: 0;
-        filter: blur(10px);
       }
     }
 
@@ -103,33 +96,31 @@
     }
 
     .animate-sheet-open {
-      animation: iosSheetOpen 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: iosSheetOpen 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .animate-sheet-close {
-      animation: iosSheetClose 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+      animation: iosSheetClose 0.2s cubic-bezier(0.7, 0, 0.84, 0) forwards;
     }
 
     .animate-backdrop-in {
-      animation: iosBackdropFadeIn 0.35s ease-out forwards;
+      animation: iosBackdropFadeIn 0.25s ease-out forwards;
     }
 
-    /* Transição de entrada dos Cards com filtro de velocidade */
+    /* Transição de entrada dos Cards mais ágil */
     @keyframes cardAppear {
       from {
         opacity: 0;
-        transform: translateY(18px) scale(0.97);
-        filter: blur(6px);
+        transform: translateY(10px) scale(0.98);
       }
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
-        filter: blur(0);
       }
     }
 
     .card-enter {
-      animation: cardAppear 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      animation: cardAppear 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
     /* Scrollbar minimalista iOS */
@@ -149,11 +140,10 @@
     }
   </style>
 </head>
-
 <body class="bg-[#F2F2F7] dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100 min-h-screen transition-colors duration-300 font-sans antialiased pb-12">
 
   <!-- Toast Notification iOS Style -->
-  <div id="toastSucesso" class="fixed top-5 left-1/2 -translate-x-1/2 -translate-y-20 opacity-0 transition-all duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] z-50 pointer-events-none">
+  <div id="toastSucesso" class="fixed top-5 left-1/2 -translate-x-1/2 -translate-y-20 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] z-50 pointer-events-none">
     <div class="ios-glass bg-zinc-900/90 dark:bg-zinc-100/90 text-white dark:text-zinc-900 px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10 dark:border-black/10">
       <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">✓</div>
       <span id="toastTexto" class="text-sm font-semibold tracking-tight">Salvo com sucesso!</span>
@@ -240,19 +230,17 @@
 
     <!-- Deliveries Cards Grid -->
     <div id="listaEntregas" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-
   </div>
 
   <!-- MODAL REGISTRO/EDIÇÃO (iOS Sheet Bottom Style) -->
-  <div id="modalForm" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-all duration-300">
+  <div id="modalForm" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-all duration-200">
     <!-- Backdrop Blur -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="fecharModal('modalForm')"></div>
-
     <div class="modal-content relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-t-[2rem] sm:rounded-[2rem] p-6 shadow-2xl border-t sm:border border-white/20 dark:border-zinc-800 transform max-h-[90vh] overflow-y-auto">
       
       <!-- Modal Handle Bar (iOS) -->
       <div class="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-5 sm:hidden"></div>
-
+      
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 id="modalTitle" class="text-xl font-bold text-zinc-900 dark:text-white">Registrar Códigos</h2>
@@ -294,14 +282,12 @@
           Salvar Registro
         </button>
       </form>
-
     </div>
   </div>
 
   <!-- MODAL VER TODOS (iOS Large Action Modal) -->
-  <div id="modalTodos" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 opacity-0 pointer-events-none transition-all duration-300">
+  <div id="modalTodos" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 opacity-0 pointer-events-none transition-all duration-200">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="fecharModal('modalTodos')"></div>
-
     <div class="modal-content relative w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-[2rem] p-5 sm:p-6 shadow-2xl border border-white/20 dark:border-zinc-800 flex flex-col max-h-[92vh]">
       
       <div class="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
@@ -317,17 +303,14 @@
       <!-- Pagination iOS Segmented Controls -->
       <div class="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-800">
         <button type="button" id="btnPagAnterior" onclick="mudarPagina(-1)" class="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all">Anterior</button>
-        
         <span id="infoPagina" class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Página 1 de 1</span>
-        
         <button type="button" id="btnPagProxima" onclick="mudarPagina(1)" class="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-all">Próxima</button>
       </div>
-
     </div>
   </div>
 
   <script>
-    // Configurações do Supabase Mantidas Integras
+    // Configurações do Supabase Mantidas Ítegras
     const SUPABASE_URL = 'https://ehgzjfwleqqytwloarkd.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoZ3pqZndsZXFxeXR3bG9hcmtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MTY2MjcsImV4cCI6MjEwODk5MjYyN30.dY64SX6f0udLSr_3P79V45oA0r5d4fcumVzwi8xO67U';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -393,7 +376,7 @@
       document.getElementById('statZe').textContent = countZe;
     }
 
-    // Modal Control com Motion Blur Animation
+    // Modal Control
     function abrirNovoRegistro() {
       limparFormulario();
       abrirModal('modalForm');
@@ -425,7 +408,7 @@
       setTimeout(() => {
         modal.classList.remove('active');
         modal.classList.add('opacity-0', 'pointer-events-none');
-      }, 250);
+      }, 200);
     }
 
     function mostrarToast(mensagem = 'Salvo com sucesso!') {
@@ -445,7 +428,6 @@
     function copiarCodigo(texto, tipo) {
       if (!texto || texto === '---') return;
       
-      // Método seguro de cópia
       const el = document.createElement('textarea');
       el.value = texto;
       document.body.appendChild(el);
@@ -522,7 +504,7 @@
 
     // Renderização dos Cards com Efeito de Animação
     function gerarCardHTML(item, index = 0) {
-      const delay = (index % 6) * 0.05;
+      const delay = (index % 6) * 0.03;
       return `
         <div class="card-enter ios-glass-card bg-white/80 dark:bg-zinc-800/80 rounded-2xl p-4 border border-zinc-200/80 dark:border-zinc-700/80 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between" style="animation-delay: ${delay}s">
           <div>
